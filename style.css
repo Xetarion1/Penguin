@@ -1,0 +1,205 @@
+/* Genel Kurulum */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #87CEEB; /* Gökyüzü rengi (SABİT) */
+    overflow: hidden; /* Dışarı çıkan #world görünsmesin */
+}
+
+/* 3. İSTEK (Bitiş Efekti Düzeltildi):
+   #world katmanı kayacak, #scene değil! */
+#world {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 2s ease-in-out;
+}
+#world.finished {
+    transform: translateY(100vh); /* Tüm dünyayı yukarı kaydır */
+}
+
+
+#sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    z-index: 1;
+}
+
+#garden {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30%;
+    background-image: repeating-linear-gradient(
+        -55deg, 
+        #2E8B57, 
+        #2E8B57 20px, 
+        #257047 20px, 
+        #257047 40px
+    );
+    background-size: 200% 100%;
+    z-index: 2;
+}
+
+/* Güneş Stili */
+#sun {
+    position: absolute;
+    top: 60px;
+    right: 120px;
+    width: 120px;
+    height: 120px;
+    background: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 30px #FFD700, 0 0 50px #FFF700;
+    z-index: 1;
+}
+/* ... (Güneşin pulse animasyonu aynı, buraya eklemedim) ... */
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    70% { transform: scale(1.1); opacity: 0.2; }
+    100% { transform: scale(1.15); opacity: 0; }
+}
+#sun::before, #sun::after { content: ''; position: absolute; inset: -20px; border: 3px solid #FFD700; border-radius: 50%; opacity: 0; animation: pulse 2s infinite; }
+#sun::after { inset: -35px; animation-delay: 0.5s; }
+
+
+/* Bulut Stilleri (Aynı) */
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 100px;
+    opacity: 0.9;
+    z-index: 1;
+    animation-name: scrollCloud;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+/* ... (Tüm bulut stilleri ve animasyonları aynı) ... */
+.cloud-fluffy { width: 200px; height: 60px; }
+.cloud-fluffy::before, .cloud-fluffy::after { content: ''; position: absolute; background: white; border-radius: 50%; width: 80px; height: 80px; top: -30px; left: 40px; }
+.cloud-fluffy::after { width: 100px; height: 100px; top: -40px; left: 70px; }
+.cloud-long { width: 250px; height: 50px; }
+.cloud1 { top: 80px; left: 120%; animation-duration: 25s; }
+.cloud2 { top: 150px; left: 160%; animation-duration: 20s; animation-delay: 1s; }
+.cloud3 { top: 100px; left: 200%; animation-duration: 30s; animation-delay: 0.5s; }
+.cloud4 { top: 180px; left: 230%; animation-duration: 18s; animation-delay: 1.5s; }
+@keyframes scrollCloud { from { transform: translateX(0); } to { transform: translateX(-300vw); } }
+
+
+/* Penguen Stilleri */
+#penguin {
+    position: absolute;
+    bottom: calc(30% - 10px);
+    left: 20%;
+    font-size: 80px;
+    z-index: 10;
+}
+
+
+/* --- Animasyon Sınıfları --- */
+
+.scrolling #garden {
+    animation: scrollBackground 10s linear infinite;
+}
+
+.scrolling #penguin {
+    animation: waddle 0.5s infinite alternate;
+}
+
+/* 1. İSTEK (Dururken Hareket Düzeltildi):
+   Bu sınıf JS tarafından eklendiğinde animasyon çalışacak. */
+#penguin.tired-panting {
+    animation: pantingPenguin 0.4s infinite alternate;
+}
+
+@keyframes scrollBackground {
+    from { background-position-x: 0; }
+    to { background-position-x: -200%; }
+}
+
+@keyframes waddle {
+    from { transform: rotate(-5deg); }
+    to { transform: rotate(5deg); }
+}
+
+/* 1. İSTEK (Dururken hareket animasyonu) */
+@keyframes pantingPenguin {
+    from {
+        transform: translateY(0) rotate(-3deg);
+    }
+    to {
+        transform: translateY(-10px) rotate(3deg);
+    }
+}
+
+
+/* Tabela Stilleri */
+.hidden {
+    display: none !important;
+}
+
+#signContainer {
+    position: absolute;
+    top: 50%;
+    left: 45%; 
+    transform: translateY(-50%);
+    z-index: 20;
+}
+/* ... (Tabela .sign, button vb. stilleri aynı) ... */
+.sign { background: #D2B48C; border: 10px solid #8B4513; padding: 20px; width: 300px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+.sign h3 { margin-top: 0; }
+.sign button { width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px; }
+#finish-btn { background: #f44336; }
+
+
+#finalMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #333;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    z-index: 30;
+    
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    transition-delay: 1.5s;
+    
+    display: flex; /* Resim ve metni dikey hizalamak için flexbox kullan */
+    flex-direction: column; /* İçerikleri dikey sıraya koy */
+    align-items: center; /* Yatayda ortala */
+    gap: 20px; /* Elemanlar arası boşluk */
+    max-width: 80vw; /* Çok büyük olmasın */
+    max-height: 80vh; /* Çok büyük olmasın */
+    box-sizing: border-box; /* padding'in genişliği etkilememesi için */
+}
+
+#finalMessage.visible {
+    opacity: 1;
+}
+
+/* YENİ: Eklediğimiz fotoğrafın stili */
+#finalPhoto {
+    max-width: 80%; /* Resmin div içine sığmasını sağla */
+    max-height: 300px; /* Maksimum yüksekliğini belirle */
+    height: auto; /* Oranını koru */
+    border-radius: 10px; /* Hafif yuvarlak kenarlar */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* Hafif gölge */
+    object-fit: contain; /* Resmin kutuya sığma şekli */
+}
+/* JS bu sınıfı ekleyince mesaj görünecek */
+#finalMessage.visible {
+    opacity: 1;
+}
